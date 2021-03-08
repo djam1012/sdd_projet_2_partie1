@@ -121,7 +121,10 @@ int main(int argc, char *argv[]){
        case 7:
           printf("Recherche de tous les ouvrages avec plusieurs exemplaires \n");
           printf("\e[1;92m");
-          afficher_biblio(afficher_exemplaires(b1));
+          Biblio* exemplaires=afficher_exemplaires(b1);
+          afficher_biblio(exemplaires);
+          liberer_biblio(exemplaires);
+          free(exemplaires);
           printf("\x1b[0m");
           break;
 
@@ -140,4 +143,3 @@ int main(int argc, char *argv[]){
   free(bib);
   return 0;
 }
-
