@@ -81,7 +81,10 @@ Livre* recherche_ouvrage_num(Biblio* b, int num){
       afficher_livre(cour);
       return cour;
     }
-    if(b->L->suiv==NULL) return NULL;
+    if(cour->suiv==NULL){
+      printf("Ce livre est indisponible.\n");
+      return NULL;
+    }
     cour=cour->suiv;
   }
 }
@@ -97,7 +100,10 @@ Livre* recherche_ouvrage_titre(Biblio* b, char* titre){
       afficher_livre(cour);
       return cour;
     }
-    if(b->L->suiv==NULL) return NULL;
+    if(cour->suiv==NULL){
+      printf("Ce livre est indisponible.\n");
+      return NULL;
+    }
     cour=cour->suiv;
   }
 }
@@ -113,42 +119,28 @@ Biblio* recherche_ouvrage_auteur(Biblio* b, char* auteur){
     if (!strcmp(cour->auteur,auteur)){
       inserer_en_tete(resultat, cour->num, cour->titre, cour->auteur);
     }
-    if(b->L->suiv==NULL) return NULL;
+    if(cour->suiv==NULL){
+      printf("Il n'existe aucun ouvrage de cet auteur dans cette bibliothèque.\n");
+      return NULL;
+    }
     cour=cour->suiv;
   }
   afficher_biblio(resultat);
   return resultat;
 }
 
-Biblio* copier_biblio(Biblio* b){ // fonction qui retourne une copie de la bibliothèque passée en paramètre
-  Biblio* temp=creer_biblio();
-  if (!b){
-    printf("La bibliothèque est vide.\n");
-    return NULL;
-  }
-  Livre* cour=b->L;
-  while(cour){
-    inserer_en_tete(temp, cour->num, cour->titre, cour->auteur);
-    if(b->L->suiv==NULL) break;
-    cour=cour->suiv;
-  }
-  Biblio* res=creer_biblio(); // comme la bibliothèque est inversée à cause de l'insertion en tete, on la remplit de nouveau à l'envers
-  cour=temp->L;
-  while(cour){
-    inserer_en_tete(res, cour->num, cour->titre, cour->auteur);
-    if(temp->L->suiv==NULL) break;
-    cour=cour->suiv;
-  }
-  liberer_biblio(temp);
-  free(temp);
-  return res;
-}
-
 Biblio* fusion_biblio(Biblio* b1, Biblio* b2){
     if(!b1) return b2;
+    if(!b2) return b1;
+    if(!b1&&!b2){
+      printf("Les deux bibliothèques sont vides.\n");
+      return NULL;
+    }
     Livre* cour=b1->L;
     while(cour->suiv) cour=cour->suiv;
     cour->suiv=b2->L;
+    b2->L=NULL;
+    b2=NULL;
     return b1;
 }
 
@@ -175,7 +167,6 @@ void supprimer_ouvrage(Biblio* b, int num, char* titre, char* auteur){
 }
 
 Biblio* afficher_exemplaires(Biblio *B){
-
   int deja_ajoute;
   Biblio *Bs = creer_biblio();
   Livre *l = B->L;
@@ -186,7 +177,7 @@ Biblio* afficher_exemplaires(Biblio *B){
 
     while (l1 != NULL) {
       if (strcmp(l->titre, l1->titre) == 0
-      && strcmp (l->auteur, l1->auteur) == 0&& l != l1){
+      && strcmp (l->auteur, l1->auteur) == 0&& l->num != l1->num){
         if (deja_ajoute==0){
           inserer_en_tete(Bs, l->num, l->titre, l->auteur);
           deja_ajoute=1;
@@ -198,4 +189,3 @@ Biblio* afficher_exemplaires(Biblio *B){
   }
   return Bs;
 }
-
